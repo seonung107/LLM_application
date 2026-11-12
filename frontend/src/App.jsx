@@ -20,17 +20,10 @@ function App() {
     setLoading(true)
 
     try {
-     const response = await fetch("/api/chat", {
-       method: "POST",
-       headers: { "Content-Type": "application/json" },
-       body: JSON.stringify({ question: trimmed }),
-      })
-      if (!response.ok) throw new Error(`HTTP ${response.status}`)
-      const data = await response.json()
-      const answer = data.answer
-      setMessages((current) => [
-        ...current, { role: "assistant", text: answer },
-      ])
+      // 실습 5에서 이 두 줄을 Python API 호출로 교체합니다.
+      await new Promise((resolve) => setTimeout(resolve, 300))
+      const answer = `임시 답변: “${trimmed}” 질문을 받았습니다.`
+      setMessages((current) => [...current, { role: 'assistant', text: answer }])
     } catch (error) {
       setMessages((current) => [...current, {
         role: 'assistant',
