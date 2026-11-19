@@ -20,15 +20,29 @@ function App() {
     setLoading(true)
 
     try {
-      // 실습 5에서 이 두 줄을 Python API 호출로 교체합니다.
-      await new Promise((resolve) => setTimeout(resolve, 300))
-      const answer = `임시 답변: “${trimmed}” 질문을 받았습니다.`
-      setMessages((current) => [...current, { role: 'assistant', text: answer }])
+      // Python API에 질문을 보냅니다.
+      const response = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ question: trimmed }),
+      })
+      if (!response.ok) throw new Error(`서버 오류: ${response.status}`)
+      const data = await response.json()
+
+      setMessages((current) => [
+        ...current,
+        {
+          role: 'assistant',
+          text: data.answer,
+          sources: data.sources ?? [], // 참고 파일 목록
+        },
+      ])
     } catch (error) {
-      setMessages((current) => [...current, {
-        role: 'assistant',
-        text: `연결 오류: ${error.message}`,
-      }])
+      // 서버가 꺼져 있거나 오류가 나면 안내 메시지를 보여 줍니다.
+      setMessages((current) => [
+        ...current,
+        { role: 'assistant', text: `답변을 받지 못했습니다. (${error.message})` },
+      ])
     } finally {
       setLoading(false)
     }
@@ -47,6 +61,12 @@ function App() {
           <div className={`message ${message.role}`} key={index}>
             <span className="role">{message.role === 'user' ? '나' : '챗봇'}</span>
             <p>{message.text}</p>
+            {/* 참고 파일이 있을 때만 표시 */}
+            {message.sources?.length > 0 && (
+              <small className="sources">
+                참고 자료: {message.sources.join(", ")}
+              </small>
+            )}
           </div>
         ))}
         {loading && <p className="status">답변을 작성하고 있습니다...</p>}
