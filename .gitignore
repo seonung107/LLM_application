@@ -2,3 +2,7 @@
 .venv/
 __pycache__/
 output/
+.vscode
+
+sqlite_lab/*.db
+data_type.py

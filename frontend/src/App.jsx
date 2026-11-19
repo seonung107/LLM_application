@@ -28,7 +28,6 @@ function App() {
       })
       if (!response.ok) throw new Error(`서버 오류: ${response.status}`)
       const data = await response.json()
-
       setMessages((current) => [
         ...current,
         {
